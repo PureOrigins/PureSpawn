@@ -1,6 +1,10 @@
 package it.pureorigins.randomspawn
 
 import com.mojang.brigadier.CommandDispatcher
+import it.pureorigins.framework.configuration.configFile
+import it.pureorigins.framework.configuration.json
+import it.pureorigins.framework.configuration.readFileAs
+import kotlinx.serialization.Serializable
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback
 import net.fabricmc.fabric.api.networking.v1.PacketSender
@@ -12,14 +16,19 @@ import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayNetworkHandler
 import net.minecraft.stat.Stats
 import net.minecraft.util.math.BlockPos
+import java.lang.Math.toRadians
+import kotlin.math.cos
+import kotlin.math.roundToInt
+import kotlin.math.sin
 import kotlin.random.Random
 
 
 object RandomSpawn : ModInitializer {
 
-    private const val RANGE = 10000
-
     override fun onInitialize() {
+
+        val config = json.readFileAs(configFile("randomspawn.json"), Config())
+
         ServerPlayConnectionEvents.JOIN.register { handler: ServerPlayNetworkHandler, _: PacketSender, _: MinecraftServer ->
             val p = handler.player
             if (p.statHandler.getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME)) == 0) {
@@ -30,12 +39,14 @@ object RandomSpawn : ModInitializer {
                 var b = p.world.getBlockState(BlockPos(x, 0, z))
 
                 while (b === Blocks.WATER) {
-                    x = Random.nextInt(RANGE)
-                    z = Random.nextInt(RANGE)
+                    val radius = Random.nextInt(config.range)
+                    val angle = toRadians(Random.nextDouble(360.0))
+                    x = (radius * cos(angle)).roundToInt()
+                    z = (radius * sin(angle)).roundToInt()
                     b = p.world.getBlockState(BlockPos(x, y, z))
                 }
-                while(b !== Blocks.AIR) b = p.world.getBlockState(BlockPos(x, y++, z))
-                p.teleport(p.serverWorld, x.toDouble(), y.toDouble(), z.toDouble(),0.0F,0.0F)
+                while (b !== Blocks.AIR) b = p.world.getBlockState(BlockPos(x, ++y, z))
+                p.setSpawnPoint(p.world.registryKey, BlockPos(x, y, z), 90F, true, false)
             }
         }
 
@@ -48,14 +59,21 @@ object RandomSpawn : ModInitializer {
                 var b = p.world.getBlockState(BlockPos(x, 0, z))
 
                 while (b === Blocks.WATER) {
-                    x = Random.nextInt(RANGE)
-                    z = Random.nextInt(RANGE)
+                    val radius = Random.nextInt(config.range)
+                    val angle = toRadians(Random.nextDouble(360.0))
+                    x = (radius * cos(angle)).roundToInt()
+                    z = (radius * sin(angle)).roundToInt()
                     b = p.world.getBlockState(BlockPos(x, y, z))
                 }
-                while(b !== Blocks.AIR) b = p.world.getBlockState(BlockPos(x, y++, z))
-                p.teleport(p.serverWorld, x.toDouble(), y.toDouble(), z.toDouble(),0.0F,0.0F)
+                while (b !== Blocks.AIR) b = p.world.getBlockState(BlockPos(x, ++y, z))
+                p.setSpawnPoint(p.world.registryKey, BlockPos(x, y, z), 90F, true, false)
                 1
             })
         })
     }
+
+    @Serializable
+    data class Config(
+        val range: Int = 0
+    )
 }
