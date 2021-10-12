@@ -10,7 +10,6 @@ import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback
 import net.fabricmc.fabric.api.networking.v1.PacketSender
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.minecraft.block.BlockState
-import net.minecraft.block.Blocks
 import net.minecraft.block.Blocks.*
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.command.CommandManager.literal
@@ -19,7 +18,6 @@ import net.minecraft.server.network.ServerPlayNetworkHandler
 import net.minecraft.stat.Stats
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
-import org.apache.logging.log4j.Level.INFO
 import org.apache.logging.log4j.LogManager
 import java.lang.Math.toRadians
 import kotlin.math.cos
@@ -31,6 +29,7 @@ import kotlin.random.Random
 object RandomSpawn : ModInitializer {
 
     private val logger = LogManager.getLogger()
+
     //TODO avoid spawning on trees
     override fun onInitialize() {
 
@@ -51,16 +50,16 @@ object RandomSpawn : ModInitializer {
                     val angle = toRadians(Random.nextDouble(360.0))
                     x = (radius * cos(angle)).roundToInt()
                     z = (radius * sin(angle)).roundToInt()
-                    pos = BlockPos(x+config.centerX, y - 1, z+config.centerZ)
+                    pos = BlockPos(x + config.centerX, y - 1, z + config.centerZ)
                     b = p.world.getBlockState(pos)
                     logger.info("Selected block $x $y $z - ${b.block}")
+                    while (!isSpaceOk(pos, p.world)) {
+                        pos = BlockPos(x, ++y, z)
+                        b = p.world.getBlockState(pos)
+                        logger.info("Selected upper block $x $y $z - ${b.block}")
+                    }
                 } while (!isGroundOk(pos, p.world))
-                while (!isSpaceOk(pos, p.world)) {
-                    pos=BlockPos(x, ++y, z)
-                    b = p.world.getBlockState(pos)
-                    logger.info("Selected upper block $x $y $z - ${b.block}")
-                }
-                p.setSpawnPoint(p.world.registryKey, pos, 0F, true, false)
+                p.setSpawnPoint(p.world.registryKey, pos, 90F, true, false)
             }
         }
 
@@ -78,15 +77,15 @@ object RandomSpawn : ModInitializer {
                     val angle = toRadians(Random.nextDouble(360.0))
                     x = (radius * cos(angle)).roundToInt()
                     z = (radius * sin(angle)).roundToInt()
-                    pos = BlockPos(x+config.centerX, y - 1, z+config.centerZ)
+                    pos = BlockPos(x + config.centerX, y - 1, z + config.centerZ)
                     b = p.world.getBlockState(pos)
                     logger.info("Selected block $x $y $z - ${b.block}")
+                    while (!isSpaceOk(pos, p.world)) {
+                        pos = BlockPos(x, ++y, z)
+                        b = p.world.getBlockState(pos)
+                        logger.info("Selected upper block $x $y $z - ${b.block}")
+                    }
                 } while (!isGroundOk(pos, p.world))
-                while (!isSpaceOk(pos, p.world)) {
-                    pos=BlockPos(x, ++y, z)
-                    b = p.world.getBlockState(pos)
-                    logger.info("Selected upper block $x $y $z - ${b.block}")
-                }
                 p.setSpawnPoint(p.world.registryKey, pos, 90F, true, false)
                 p.teleport(p.serverWorld, x.toDouble(), y.toDouble(), z.toDouble(), 0F, 0F)
                 1
@@ -96,7 +95,6 @@ object RandomSpawn : ModInitializer {
 
     private fun isGroundOk(pos: BlockPos, w: World): Boolean {
         val ground = w.getBlockState(BlockPos(pos.x, pos.y - 1, pos.z))
-
         if (ground.block === WATER || ground.block === LAVA || ground.block === CACTUS) {
             logger.info("Dangerous block: ${pos.x} ${pos.y - 1} ${pos.z} is on the ${ground.block}")
             return false
