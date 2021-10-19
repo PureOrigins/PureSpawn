@@ -17,11 +17,7 @@ import net.minecraft.server.network.SpawnLocating
 import net.minecraft.stat.Stats
 import net.minecraft.util.math.BlockPos
 import org.apache.logging.log4j.LogManager
-import java.lang.Math.toRadians
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sin
-import kotlin.random.Random
+import java.lang.Math.random
 
 
 object RandomSpawn : ModInitializer {
@@ -37,17 +33,10 @@ object RandomSpawn : ModInitializer {
             val p = handler.player
             if (p.statHandler.getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME)) == 0) {
 
-                var x: Int
-                val y = 64
-                var z: Int
                 var pos: BlockPos?
 
                 do {
-                    val radius = Random.nextInt(config.range)
-                    val angle = toRadians(Random.nextDouble(360.0))
-                    x = (radius * cos(angle)).roundToInt()
-                    z = (radius * sin(angle)).roundToInt()
-                    val chunkPos = p.world.getChunk(BlockPos(x + config.centerX, y, z + config.centerZ)).pos
+                    val chunkPos = p.world.getChunk(randomPos(config.range, config.centerX, config.centerZ)).pos
                     pos = SpawnLocating.findServerSpawnPoint(p.serverWorld, chunkPos, true)
                 } while (pos == null)
                 p.teleport(pos.x + 0.5, pos.y.toDouble(), pos.z + 0.5)
@@ -58,17 +47,10 @@ object RandomSpawn : ModInitializer {
         CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher: CommandDispatcher<ServerCommandSource?>, _: Boolean ->
             dispatcher.register(literal("test").executes { context ->
                 val p = context.source.player
-                var x: Int
-                val y = 64
-                var z: Int
                 var pos: BlockPos?
 
                 do {
-                    val radius = Random.nextInt(config.range)
-                    val angle = toRadians(Random.nextDouble(360.0))
-                    x = (radius * cos(angle)).roundToInt()
-                    z = (radius * sin(angle)).roundToInt()
-                    val chunkPos = p.world.getChunk(BlockPos(x + config.centerX, y, z + config.centerZ)).pos
+                    val chunkPos = p.world.getChunk(randomPos(config.range, config.centerX, config.centerZ)).pos
                     pos = SpawnLocating.findServerSpawnPoint(p.serverWorld, chunkPos, true)
                 } while (pos == null)
                 p.teleport(pos!!.x + 0.5, pos!!.y.toDouble(), pos!!.z + 0.5)
@@ -77,6 +59,16 @@ object RandomSpawn : ModInitializer {
             })
         })
 
+    }
+
+    private fun randomPos(radius: Int, centerX: Int, centerZ: Int): BlockPos {
+        var x: Double
+        var y: Double
+        do {
+            x = (2 * random() - 1)
+            y = (2 * random() - 1)
+        } while (x * x + y * y > 1)
+        return BlockPos((x + radius).toInt() + centerX, 64, (y * radius).toInt() + centerZ)
     }
 
     @Serializable
