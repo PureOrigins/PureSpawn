@@ -101,7 +101,7 @@ object RandomSpawn : ModInitializer {
             var pos: BlockPos?
             do {
                 val chunkPos = overworld.getChunk(randomPos(range, centerX, centerZ)).pos
-                pos = SpawnLocating.findServerSpawnPoint(overworld, chunkPos, true)
+                pos = SpawnLocating.findServerSpawnPoint(overworld, chunkPos)
             } while (pos == null)
             return pos
         }
