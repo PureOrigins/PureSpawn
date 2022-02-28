@@ -1,12 +1,11 @@
 pluginManagement {
     repositories {
-        maven("https://maven.fabricmc.net") { name = "Fabric" }
         gradlePluginPortal()
+        maven("https://papermc.io/repo/repository/maven-public/")
     }
     plugins {
-        val loomVersion: String by settings
-        id("fabric-loom").version(loomVersion)
         val kotlinVersion: String by System.getProperties()
         kotlin("jvm").version(kotlinVersion)
     }
+
 }
