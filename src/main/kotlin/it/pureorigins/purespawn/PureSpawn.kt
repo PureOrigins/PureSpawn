@@ -1,13 +1,15 @@
 package it.pureorigins.purespawn
 
-import it.pureorigins.common.*
+import it.pureorigins.common.file
+import it.pureorigins.common.json
+import it.pureorigins.common.readFileAs
+import it.pureorigins.common.registerEvents
 import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace.DOWN
 import org.bukkit.block.BlockFace.UP
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
@@ -27,17 +29,15 @@ class PureSpawn : JavaPlugin(), Listener {
         spawnBuffer =
             SpawnBuffer(server.worlds[0], config.range, config.centerX, config.centerZ, config.spawnBufferSize)
         registerEvents(this)
-        registerCommand(
-            literal("test") {
+        /*registerCommand(literal("test") {
                 success {
-
                     val p = source as Player
                     val pos = spawnBuffer.pop().add(0.5, 0.0, 0.5)
                     p.teleport(pos)
                     p.bedSpawnLocation = pos
                     spawnBuffer.addSpawnPoint()
                 }
-            })
+            })*/
     }
 
     @EventHandler
