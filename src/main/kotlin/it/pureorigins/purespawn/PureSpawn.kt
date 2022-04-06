@@ -24,7 +24,7 @@ class PureSpawn : JavaPlugin(), Listener {
 
     //TODO avoid spawning on trees
     override fun onEnable() {
-        val config = json.readFileAs(file("randomspawn.json"), Config())
+        val config = json.readFileAs(file("purespawn.json"), Config())
         server.consoleSender.sendMessage("PureSpawn successfully loaded!")
         spawnBuffer =
             SpawnBuffer(server.worlds[0], config.range, config.centerX, config.centerZ, config.spawnBufferSize)
@@ -82,7 +82,7 @@ class PureSpawn : JavaPlugin(), Listener {
         private fun findSpawnPoint(): Location {
             var pos: Location
             do {
-                pos = overworld.getHighestBlockAt(randomPos(overworld, range, centerX, centerZ)).location
+                pos = overworld.getHighestBlockAt(randomPos(overworld, range, centerX, centerZ)).getRelative(UP).location
             } while (!isSafe(pos))
             return pos
         }
