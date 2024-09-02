@@ -26,7 +26,7 @@ repositories {
 
 dependencies {
     compileOnly("com.github.PureOrigins", "PureCommon", "0.3.10")
-    compileOnly("org.purpurmc.purpur", "purpur-api", "1.21-R0.1-SNAPSHOT")
+    compileOnly("org.purpurmc.purpur", "purpur-api", "1.21.1-R0.1-SNAPSHOT")
 }
 
 afterEvaluate {
