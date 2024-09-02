@@ -29,15 +29,6 @@ class PureSpawn : JavaPlugin(), Listener {
         spawnBuffer =
             SpawnBuffer(server.worlds[0], config.range, config.centerX, config.centerZ, config.spawnBufferSize)
         registerEvents(this)
-        /*registerCommand(literal("test") {
-                success {
-                    val p = source as Player
-                    val pos = spawnBuffer.pop().add(0.5, 0.0, 0.5)
-                    p.teleport(pos)
-                    p.bedSpawnLocation = pos
-                    spawnBuffer.addSpawnPoint()
-                }
-            })*/
     }
 
     @EventHandler
@@ -47,7 +38,7 @@ class PureSpawn : JavaPlugin(), Listener {
             val pos = spawnBuffer.pop()
             val l = Location(p.world, pos.x + 0.5, pos.y, pos.z + 0.5)
             p.teleport(l)
-            p.bedSpawnLocation = l
+            p.respawnLocation = l
             spawnBuffer.addSpawnPoint()
         }
     }
@@ -82,7 +73,8 @@ class PureSpawn : JavaPlugin(), Listener {
         private fun findSpawnPoint(): Location {
             var pos: Location
             do {
-                pos = overworld.getHighestBlockAt(randomPos(overworld, range, centerX, centerZ)).getRelative(UP).location
+                pos =
+                    overworld.getHighestBlockAt(randomPos(overworld, range, centerX, centerZ)).getRelative(UP).location
             } while (!isSafe(pos))
             return pos
         }
@@ -103,7 +95,7 @@ class PureSpawn : JavaPlugin(), Listener {
             val feet: Block = location.block
             val head: Block = feet.getRelative(UP)
             // not transparent (will suffocate)
-            if (!feet.type.isTransparent && !head.type.isTransparent) return false
+            if (feet.type.isOccluding && head.type.isOccluding) return false
             val ground: Block = feet.getRelative(DOWN)
             return ground.type.isSolid
         }

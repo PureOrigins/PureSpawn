@@ -1,8 +1,9 @@
+import java.util.*
+
 plugins {
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.serialization") version "1.6.10"
-    id("io.papermc.paperweight.userdev") version "1.3.4"
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
+    kotlin("jvm") version "2.0.20"
+    kotlin("plugin.serialization") version "2.0.20"
+    id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
     `maven-publish`
 }
 
@@ -12,19 +13,20 @@ version = "1.0.0"
 bukkit {
     name = project.name
     version = project.version.toString()
-    main = "it.pureorigins.${project.name.toLowerCase()}.${project.name}"
-    apiVersion = "1.18"
+    main = "it.pureorigins.${project.name.lowercase(Locale.getDefault())}.${project.name}"
+    apiVersion = "1.21.1"
     depend = listOf("PureCommon")
 }
 
 repositories {
     mavenCentral()
     maven("https://jitpack.io")
+    maven("https://repo.purpurmc.org/snapshots")
 }
 
 dependencies {
-    paperDevBundle("1.18.2-R0.1-SNAPSHOT")
-    compileOnly("com.github.PureOrigins:PureCommon:0.3.7")
+    compileOnly("com.github.PureOrigins", "PureCommon", "0.3.10")
+    compileOnly("org.purpurmc.purpur", "purpur-api", "1.21-R0.1-SNAPSHOT")
 }
 
 afterEvaluate {
@@ -33,23 +35,15 @@ afterEvaluate {
             archiveClassifier.set("")
         }
 
-        reobfJar {
-            outputJar.set(jar.get().archiveFile)
-        }
-
-        build {
-            dependsOn(reobfJar)
-        }
-
         compileKotlin {
-            kotlinOptions.jvmTarget = "17"
+            kotlinOptions.jvmTarget = "21"
         }
     }
 }
 
 kotlin {
     jvmToolchain {
-        (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(17))
+        this.languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
