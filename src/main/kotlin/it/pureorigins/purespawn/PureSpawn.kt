@@ -95,7 +95,7 @@ class PureSpawn : JavaPlugin(), Listener {
             val feet: Block = location.block
             val head: Block = feet.getRelative(UP)
             // not transparent (will suffocate)
-            if (feet.type.isOccluding && head.type.isOccluding) return false
+            if (feet.type.isOccluding || head.type.isOccluding) return false
             val ground: Block = feet.getRelative(DOWN)
             return ground.type.isSolid
         }
