@@ -22,7 +22,6 @@ class PureSpawn : JavaPlugin(), Listener {
 
     private lateinit var spawnBuffer: SpawnBuffer
 
-    //TODO avoid spawning on trees
     override fun onEnable() {
         val config = json.readFileAs(file("purespawn.json"), Config())
         server.consoleSender.sendMessage("PureSpawn successfully loaded!")
