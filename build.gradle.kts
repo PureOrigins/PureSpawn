@@ -1,20 +1,20 @@
 import java.util.*
 
 plugins {
-    kotlin("jvm") version "2.0.20"
-    kotlin("plugin.serialization") version "2.0.20"
+    kotlin("jvm") version "2.2.20"
+    kotlin("plugin.serialization") version "2.2.20"
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
     `maven-publish`
 }
 
 group = "it.pureorigins"
-version = "1.0.0"
+version = "1.0.1"
 
 bukkit {
     name = project.name
     version = project.version.toString()
     main = "it.pureorigins.${project.name.lowercase(Locale.getDefault())}.${project.name}"
-    apiVersion = "1.21.1"
+    apiVersion = "1.21.8"
     depend = listOf("PureCommon")
 }
 
@@ -25,8 +25,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.github.PureOrigins", "PureCommon", "0.4.3")
-    compileOnly("org.purpurmc.purpur", "purpur-api", "1.21.1-R0.1-SNAPSHOT")
+    compileOnly("com.github.PureOrigins", "PureCommon", "0.4.5")
+    compileOnly("org.purpurmc.purpur", "purpur-api", "1.21.8-R0.1-SNAPSHOT")
 }
 
 afterEvaluate {
